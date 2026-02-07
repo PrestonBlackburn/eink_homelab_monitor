@@ -59,10 +59,11 @@ int init_wifi(int retry_count, int set_led) {
     // blink wifi led if failed
 	if (success == -1) {
 		printf("Wifi connection Failed\n");
-        int count = 10
+        int count = 10;
+        int i;
         for (i=0; i<count; i++) {
             cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-            sleep_ms(500)
+            sleep_ms(500);
             cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
         }
         return -1;
@@ -72,7 +73,7 @@ int init_wifi(int retry_count, int set_led) {
     // (done through wifi driver)
     if (set_led == 1) {
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
-        sleep_ms(2000)
+        sleep_ms(2000);
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
     }
 

@@ -9,12 +9,15 @@ This project aims to provide a minimal display for monitoring homelabs that host
 
 ## Usage
 
-requires pico-sdk and pico-extras libs
 ```bash
+git submodule add https://github.com/raspberrypi/pico-sdk.git
+git submodule add https://github.com/raspberrypi/pico-extras.git
+cd pico-sdk
+git submodule update --init
 # export PICOTOOL_FETCH_FROM_GIT_PATH=../pico-sdk
 # export PICO_SDK_PATH=/home/prestonb/hardware_projects/pico-sdk
 # export PICO_EXTRAS_PATH=/home/prestonb/hardware_projects/pico-extras
-export PICO_SDK_PATH=../../pico-sdk
+export PICOTOOL_FETCH_FROM_GIT_PATH=./pico-sdk
 ```
 *note: the wifi_config.cmake file is not in github*
 
@@ -24,6 +27,9 @@ from `/build` folder:
 # cmake -DPICO_BOARD=pico_w ..
 cmake -DPICO_BOARD=pico_w -DPICO_SDK_POST_LIST_DIRS=../pico_extras ..
 make 
+
+cmake -DPICO_BOARD=pico_w -B build
+make -C build
 ```
 
 **View Logs (UART)**

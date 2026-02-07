@@ -1,12 +1,16 @@
-cmake_minimum_required(VERSION 3.12)
-include(pico_sdk_import.cmake)
-project(Pico_ePaper_Code)
+cmake_minimum_required(VERSION 3.13)
+
+set(PICO_SDK_PATH ${CMAKE_CURRENT_LIST_DIR}/pico-sdk)
+set(PICO_EXTRAS_PATH ${CMAKE_CURRENT_LIST_DIR}/pico-extras)
+include(${PICO_SDK_PATH}/pico_sdk_init.cmake)
+include(${PICO_EXTRAS_PATH}/external/pico_extras_import.cmake)
+
+project(eink_monitor C CXX ASM)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
-
-# include(pico_extras_import.cmake)
-set(PICO_EXTRAS_PATH /home/prestonb/hardware_projects/pico-extras)	# <==== Change the path to the pico-extras folder here
-include(${PICO_EXTRAS_PATH}/external/pico_extras_import.cmake)
 
 include(wifi_config.cmake OPTIONAL)
 
@@ -25,22 +29,18 @@ include_directories(./lib/utils)
 
 # generate an executable file
 add_executable(eink_monitor 
-main.c
+    main.c
 )
 
-target_compile_definitions(eink_monitor PRIVATE
-	WIFI_SSID=\"${WIFI_SSID}\"
-	WIFI_PASSWORD=\"${WIFI_PASSWORD}\"
-)
+target_include_directories(eink_monitor 
+    PRIVATE 
+    # ${CMAKE_CURRENT_LIST_DIR}
+    ${PROJECT_SOURCE_DIR}/utils
+) 
 
 # enable usb output, disable uart output
 pico_enable_stdio_usb(eink_monitor 1)
 pico_enable_stdio_uart(eink_monitor 0)
-
-# create map/bin/hex/uf2 file etc.
-pico_add_extra_outputs(eink_monitor)
-
-target_include_directories(eink_monitor PRIVATE ${CMAKE_CURRENT_LIST_DIR}) 
 
 target_link_libraries(eink_monitor 
     utils 
@@ -51,13 +51,17 @@ target_link_libraries(eink_monitor
     pico_stdlib 
     hardware_spi
 
-	pico_sleep
+	pico_runtime 
 
-	hardware_uart
-	hardware_rtc
+	hardware_sleep 
+	pico_aon_timer
+	hardware_rosc
 	hardware_clocks
-	hardware_sync
+	hardware_uart
 
 	pico_cyw43_arch_lwip_threadsafe_background
 	pico_lwip_http
 )
+
+# create map/bin/hex/uf2 file etc.
+pico_add_extra_outputs(eink_monitor)
