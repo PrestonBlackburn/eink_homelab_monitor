@@ -58,6 +58,7 @@ target_link_libraries(eink_monitor
 	hardware_rosc
 	hardware_clocks
 	hardware_uart
+    hardware_rtc
 
 	pico_cyw43_arch_lwip_threadsafe_background
 	pico_lwip_http

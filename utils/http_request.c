@@ -5,12 +5,31 @@
 #include "lwip/apps/http_client.h"
 #include "pico/cyw43_arch.h"
 #include "pico/sync.h"
+#include "lwip/dns.h"
 
 #define HTTP_RESPONSE_MAX 4096 // max response buffer
 
 static volatile bool request_complete = false;
 static volatile bool request_success = false;
 
+
+// Test DNS lookup directly
+void test_dns_lookup() {
+    printf("\n=== Testing DNS Lookup ===\n");
+    
+    ip_addr_t addr;
+    err_t err = dns_gethostbyname("google.com", &addr, NULL, NULL);
+    
+    if (err == ERR_OK) {
+        printf("DNS lookup SUCCESS (cached): %s\n", ipaddr_ntoa(&addr));
+    } else if (err == ERR_INPROGRESS) {
+        printf("DNS lookup in progress...\n");
+        sleep_ms(5000);  // Wait for async DNS
+        printf("After waiting, check if resolved\n");
+    } else {
+        printf("DNS lookup FAILED with error: %d\n", err);
+    }
+}
 
 // ----- test get request ------
 
@@ -100,6 +119,19 @@ int test_http_request() {
 		NULL,
 		&connection
 	);
+
+    // Convert IP string to ip_addr_t
+    // ip_addr_t server_ip;
+    // IP4_ADDR(&server_ip, 142, 250, 185, 46);  // google.com
+    // err_t err = httpc_get_file(
+    //     &server_ip,  // google's ip address
+    //     80,
+    //     "/",
+    //     &settings,
+    //     recv_fn,
+    //     NULL,
+    //     &connection
+    // );
 
     if (err != ERR_OK) {
 		printf("HTTP request failed to start %d\n", err);

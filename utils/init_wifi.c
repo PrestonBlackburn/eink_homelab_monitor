@@ -2,6 +2,8 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "pico/cyw43_arch.h"
+#include "lwip/netif.h"
+#include "lwip/ip4_addr.h"
 
 const char *ssid = WIFI_SSID; // from env
 const char *pass = WIFI_PASSWORD; // from env
@@ -45,7 +47,7 @@ int init_wifi(int retry_count, int set_led) {
 
     // sometimes connection is flaky
     int counter = 0;
-    int success = 0;
+    int success = -1;
     while (counter < retry_count && success == -1) {
         printf("attempt: %d to connect to wifi...\n", counter);
         int conn_status = connect_to_wifi();
@@ -69,9 +71,32 @@ int init_wifi(int retry_count, int set_led) {
         return -1;
 	}
 
+    // Check if we actually got an IP address
+    printf("Checking network status...\n");
+    printf("Link status: %d\n", cyw43_wifi_link_status(&cyw43_state, CYW43_ITF_STA));
+    
+    // Add DHCP wait here
+    printf("WiFi connected, waiting for IP address...\n");
+    int ip_timeout = 30;
+    while (ip_timeout > 0) {
+        struct netif *netif = netif_default;
+        if (netif && !ip4_addr_isany(netif_ip4_addr(netif))) {
+            printf("Got IP: %s\n", ip4addr_ntoa(netif_ip4_addr(netif)));
+            break;
+        }
+        sleep_ms(1000);
+        ip_timeout--;
+    }
+    
+    if (ip_timeout == 0) {
+        printf("Failed to get IP address\n");
+        return -1;
+    }
+
     // finally solid green wifi led if success
     // (done through wifi driver)
     if (set_led == 1) {
+        printf("Wifi Connection Success\n");
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
         sleep_ms(2000);
         cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);

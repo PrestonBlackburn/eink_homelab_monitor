@@ -19,4 +19,5 @@ target_link_libraries(utils
     Config 
     pico_cyw43_arch_lwip_threadsafe_background
     pico_lwip_http
+    hardware_rtc
 )

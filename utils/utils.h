@@ -9,5 +9,6 @@
 #include <stdlib.h> // malloc() free()
 
 int eink_test(void);
+int set_eink_status(int status, datetime_t *t);
 
 #endif
