@@ -35,14 +35,17 @@ typedef struct NTP_T_ {
 #define NTP_DELTA 2208988800 // seconds between 1 Jan 1900 and 1 Jan 1970
 #define NTP_TEST_TIME_MS (30 * 1000)
 #define NTP_RESEND_TIME_MS (10 * 1000)
+#define TIMEZONE_OFFSET_HOURS -7  // Mountain Standard Time
+// #define TIMEZONE_OFFSET_HOURS -6  // Mountain Daylight Time
 
 // Called with results of operation
 static void ntp_result(NTP_T* state, int status, time_t *result) {
     if (status == 0 && result) {
-        struct tm *utc = gmtime(result);
+        time_t local_time = *result + (TIMEZONE_OFFSET_HOURS * 3600);
+        struct tm *mtz = gmtime(&local_time);
         printf("got ntp response: %02d/%02d/%04d %02d:%02d:%02d\n", 
-            utc->tm_mday, utc->tm_mon + 1, utc->tm_year + 1900,
-            utc->tm_hour, utc->tm_min, utc->tm_sec);
+            mtz->tm_mday, mtz->tm_mon + 1, mtz->tm_year + 1900,
+            mtz->tm_hour, mtz->tm_min, mtz->tm_sec);
         
             // store result where we can access it
             state->result_time = *result;
@@ -50,13 +53,13 @@ static void ntp_result(NTP_T* state, int status, time_t *result) {
 
             // set system RTC
             datetime_t dt;
-            dt.year = utc->tm_year + 1900;
-            dt.month = utc->tm_mon + 1;
-            dt.day = utc->tm_mday;
-            dt.dotw = utc->tm_wday;  // day of the week (0=Sunday)
-            dt.hour = utc->tm_hour;
-            dt.min = utc->tm_min;
-            dt.sec = utc->tm_sec;
+            dt.year = mtz->tm_year + 1900;
+            dt.month = mtz->tm_mon + 1;
+            dt.day = mtz->tm_mday;
+            dt.dotw = mtz->tm_wday;  // day of the week (0=Sunday)
+            dt.hour = mtz->tm_hour;
+            dt.min = mtz->tm_min;
+            dt.sec = mtz->tm_sec;
             
             rtc_set_datetime(&dt);
             printf("System Time Set\n");

@@ -499,7 +499,7 @@ void Paint_DrawCircle(UWORD X_Center, UWORD Y_Center, UWORD Radius,
 }
 
 /******************************************************************************
-function: Show English characters
+function: Show English charactersDraw
 parameter:
     Xpoint           ：X coordinate
     Ypoint           ：Y coordinate
@@ -755,6 +755,31 @@ void Paint_DrawTime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font,
     Paint_DrawChar(Xstart + Dx * 4 + Dx / 2 - Dx / 4, Ystart, ':'                    , Font, Color_Background, Color_Foreground);
     Paint_DrawChar(Xstart + Dx * 5                  , Ystart, value[pTime->Sec / 10] , Font, Color_Background, Color_Foreground);
     Paint_DrawChar(Xstart + Dx * 6                  , Ystart, value[pTime->Sec % 10] , Font, Color_Background, Color_Foreground);
+}
+
+void Paint_DrawDatetime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font, 
+                        UWORD Color_Foreground, UWORD Color_Background)
+{
+    uint8_t value[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    char mon_char[12][3+1] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+    UWORD Dx = Font->Width;
+    // month
+    Paint_DrawChar(Xstart                           , Ystart, mon_char[pTime->Month-1][0], Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx                      , Ystart, mon_char[pTime->Month-1][1], Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 2                  , Ystart, mon_char[pTime->Month-1][2], Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 2 + Dx / 4 + Dx / 2, Ystart, ' '                    , Font, Color_Background, Color_Foreground);
+    // day
+    Paint_DrawChar(Xstart + Dx * 3 + Dx / 2         , Ystart, value[pTime->Day / 10], Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 4 + Dx / 2         , Ystart, value[pTime->Day % 10], Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 5 + Dx / 2 + Dx / 4, Ystart, ' '                   , Font, Color_Background, Color_Foreground);
+    // hour
+    Paint_DrawChar(Xstart + Dx * 6 + Dx / 2         , Ystart, value[pTime->Hour / 10], Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 7 + Dx / 2         , Ystart, value[pTime->Hour % 10], Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 8 + Dx / 4         , Ystart, ':'                    , Font, Color_Background, Color_Foreground);
+    // minute
+    Paint_DrawChar(Xstart + Dx * 9                  , Ystart, value[pTime->Min / 10] , Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart + Dx * 10                 , Ystart, value[pTime->Min % 10] , Font, Color_Background, Color_Foreground);
 }
 
 /******************************************************************************
