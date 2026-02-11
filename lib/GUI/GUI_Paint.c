@@ -711,6 +711,13 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
         return;
     }
 
+    // Handle zero case
+    if (Nummber == 0) {
+        Str_Array[0] = '0';
+        Paint_DrawString_EN(Xpoint, Ypoint, (const char*)pStr, Font, Color_Foreground, Color_Background);
+        return;
+    }
+
     //Converts a number to a string
     while (Nummber) {
         Num_Array[Num_Bit] = Nummber % 10 + '0';
@@ -757,6 +764,16 @@ void Paint_DrawTime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font,
     Paint_DrawChar(Xstart + Dx * 6                  , Ystart, value[pTime->Sec % 10] , Font, Color_Background, Color_Foreground);
 }
 
+/******************************************************************************
+function:	Display datetime 
+parameter:
+    Xstart           ：X coordinate
+    Ystart           : Y coordinate
+    pTime            : Time-related structures
+    Font             ：A structure pointer that displays a character size
+    Color_Foreground : Select the foreground color
+    Color_Background : Select the background color
+******************************************************************************/
 void Paint_DrawDatetime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font, 
                         UWORD Color_Foreground, UWORD Color_Background)
 {
@@ -801,4 +818,26 @@ void Paint_DrawBitMap(const unsigned char* image_buffer)
             Paint.Image[Addr] = (unsigned char)image_buffer[Addr];
         }
     }
+}
+
+/******************************************************************************
+function:	Display uptime days and hours
+parameter:
+    Xstart           ：X coordinate
+    Ystart           : Y coordinate
+    pTime            : Time-related structures
+    Font             ：A structure pointer that displays a character size
+    Color_Foreground : Select the foreground color
+    Color_Background : Select the background color
+******************************************************************************/
+void Paint_DrawUptime(UWORD Xstart, UWORD Ystart, int day, int hour, sFONT* Font, 
+                        UWORD Color_Foreground, UWORD Color_Background)
+{
+    UWORD Dx = Font->Width;
+    char day_str[] = "days";
+    char hr_str[] = "hr";
+    Paint_DrawNum(Xstart, Ystart, day, Font, Color_Foreground, Color_Background);
+    Paint_DrawString_EN(Xstart + Dx * 2, Ystart, day_str, Font, Color_Foreground, Color_Background);
+    Paint_DrawNum(Xstart + Dx * 7, Ystart, hour, Font, Color_Foreground, Color_Background);
+    Paint_DrawString_EN(Xstart + Dx * 9, Ystart, hr_str, Font, Color_Foreground, Color_Background);
 }

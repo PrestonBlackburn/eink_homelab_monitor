@@ -24,10 +24,6 @@ export PICOTOOL_FETCH_FROM_GIT_PATH=./pico-sdk
 **Build**
 from `/build` folder:
 ```bash
-# cmake -DPICO_BOARD=pico_w ..
-cmake -DPICO_BOARD=pico_w -DPICO_SDK_POST_LIST_DIRS=../pico_extras ..
-make 
-
 cmake -DPICO_BOARD=pico_w -B build
 make -C build
 ```

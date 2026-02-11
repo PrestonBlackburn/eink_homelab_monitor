@@ -8,7 +8,15 @@
 #include "Debug.h"
 #include <stdlib.h> // malloc() free()
 
+typedef struct _ServerStatus{
+    bool server_online;
+    int uptime_days;
+    int uptime_hours;
+    datetime_t last_state_change;
+} ServerStatus;
+
 int eink_test(void);
-int set_eink_status(int status, datetime_t *t);
+// int set_eink_status(int status, datetime_t *t);
+int set_eink_status(ServerStatus *server_status);
 
 #endif
