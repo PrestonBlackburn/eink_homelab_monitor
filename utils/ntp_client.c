@@ -197,6 +197,25 @@ void run_ntp_test(void) {
     free(state);
 }
 
+// Add this helper function
+static void ntp_cleanup(NTP_T *state) {
+    if (!state) return;
+    
+    // Remove workers
+    async_context_remove_at_time_worker(cyw43_arch_async_context(), &state->request_worker);
+    async_context_remove_at_time_worker(cyw43_arch_async_context(), &state->resend_worker);
+    
+    // Free UDP PCB
+    if (state->ntp_pcb) {
+        udp_remove(state->ntp_pcb);
+        state->ntp_pcb = NULL;
+    }
+    
+    // Free state
+    free(state);
+}
+
+
 int get_ntp_time(time_t *result) {
     NTP_T *state = ntp_init();
     if (!state) {
@@ -213,7 +232,7 @@ int get_ntp_time(time_t *result) {
         0
     )) {
         printf("Failed to add worker\n");
-        free(state);
+        ntp_cleanup(state);
         return -1;
     }
 
@@ -240,6 +259,7 @@ int get_ntp_time(time_t *result) {
         printf("NTP request failed\n");
     }
 
-    free(state);
+    // free udp pcb 
+    ntp_cleanup(state);
     return return_code;
 }

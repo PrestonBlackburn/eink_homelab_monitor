@@ -15,8 +15,7 @@ typedef struct _ServerStatus{
     datetime_t last_state_change;
 } ServerStatus;
 
-int eink_test(void);
-// int set_eink_status(int status, datetime_t *t);
-int set_eink_status(ServerStatus *server_status);
+int eink_init(void);
+int set_eink_status(ServerStatus *server_status, datetime_t *current_time);
 
 #endif

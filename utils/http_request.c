@@ -111,9 +111,9 @@ int test_http_request() {
     httpc_state_t *connection = NULL;
 
     err_t err = httpc_get_file_dns(
-		"example.com",
+		"prestonblackburn.com",
 		80,
-		"/",
+		"/healthz",
 		&settings,
 		recv_fn,
 		NULL,

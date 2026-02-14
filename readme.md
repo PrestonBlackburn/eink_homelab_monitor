@@ -9,24 +9,28 @@ This project aims to provide a minimal display for monitoring homelabs that host
 
 ## Usage
 
+Setup:
 ```bash
-git submodule add https://github.com/raspberrypi/pico-sdk.git
-git submodule add https://github.com/raspberrypi/pico-extras.git
-cd pico-sdk
-git submodule update --init
-# export PICOTOOL_FETCH_FROM_GIT_PATH=../pico-sdk
-# export PICO_SDK_PATH=/home/prestonb/hardware_projects/pico-sdk
-# export PICO_EXTRAS_PATH=/home/prestonb/hardware_projects/pico-extras
+git clone https://github.com/PrestonBlackburn/eink_homelab_monitor.git
+git submodule update --init --recursive
 export PICOTOOL_FETCH_FROM_GIT_PATH=./pico-sdk
 ```
-*note: the wifi_config.cmake file is not in github*
+*note: the wifi_config.cmake file is not in github*  
+Create your own `wifi_config.cmake` file based on the `wifi_config.cmake.example` file
+```cmake
+set(WIFI_SSID "your_wifi_ssid")
+set(WIFI_PASSWORD "your_wifi_password")
+```
 
 **Build**
-from `/build` folder:
+from the root of the project:
 ```bash
 cmake -DPICO_BOARD=pico_w -B build
 make -C build
 ```
+
+**Run the program**  
+Move the `eink_monitor.uf2` to the pico pi (RPI-RP2 folder when plugged in)  
 
 **View Logs (UART)**
 (while in execute mode)
@@ -39,14 +43,13 @@ Connect To Read Logs:
 sudo minicom -b 115200 -o -D /dev/ttyACM0
 ```
 
-
-
 ## Overview
 
-There are two main pieces to this library:
-1. The wifi connection to the server
-2. Using the deep sleep with the Pico
-3. The Eink display setup
+There are a few main pieces to this library:
+1. The wifi connection
+2. HTTP requests to the server + NTP server
+3. Using the deep sleep with the Pico
+4. The Eink display setup
 
 
 ## Hardware
@@ -57,14 +60,15 @@ There are two main pieces to this library:
 ### Pico Pi Wifi
 Pico Pi vs Pico Pi W
 
+
 IwIP Lib
 
 
 ### Pico Pi Deepsleep
+<not implemented>  
+Wasn't able to get this working, and I found out that for the lowest power setup you need an external trigger to wakeup the pico pi. I think this is the best solution, since the eink screen + flash memory can preserve the state. I think the difference should allow the pico to last for a little under a month on a small 500mAh battery.    
 
-Waking up
-
-
+Example setup: https://ghubcoder.github.io/posts/waking-the-pico-external-trigger/
 
 ### Eink Waveshare Library
 
@@ -77,7 +81,7 @@ The Waveshare repo isn't really maintained, so I'll be using this repo as the so
 My build process (assuming you already have the `pico-sdk` installed at that path)
 Testing
 ```bash
-export PICO_SDK_PATH=../../pico-sdk
+export PICO_SDK_PATH=./pico-sdk
 
 mkdir build
 cd build
@@ -93,7 +97,7 @@ make -j9
 ++ #define DEBUG 1 // for logging
 ```
 
-### About The Eink Setup
+## About The Eink Setup
 The docs are pretty decent for the eink display, but I'm adding some of my findings / processes here in case I need them in the future.  
 
 Some of the context I needed was not actually about the display in general, but:
@@ -108,7 +112,7 @@ Some of the context I needed was not actually about the display in general, but:
 
 
 
-#### 1. What is the deal with Eink displays
+#### 1. What's the deal with Eink displays
 
 E-ink displays are cool because they don't require power to persist an image making them great for low power applications. They work much differently than LED screens. Instead of emitting light when a current is applied, E-ink uses charged colored particles suspended in transparent oil to display images. When a current is applied to the micro-capsules full of particles, the charged pigments will move to the respective ends of the capsules and display black or white. Since the movement only needs to happen once the image persists when there is no current.  
 

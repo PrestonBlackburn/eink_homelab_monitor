@@ -62,6 +62,7 @@ target_link_libraries(eink_monitor
 
 	pico_cyw43_arch_lwip_threadsafe_background
 	pico_lwip_http
+    pico_util
 )
 
 # create map/bin/hex/uf2 file etc.
