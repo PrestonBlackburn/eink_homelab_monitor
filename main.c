@@ -156,9 +156,9 @@ int main(void) {
                 return -1;
             }
         #else
-            // time to wait between readings
-            // poll every minute
-            sleep_ms(2000);
+            // poll time
+            int min = 15;
+            sleep_ms(1000 * 60 * min);
 
         #endif
     }

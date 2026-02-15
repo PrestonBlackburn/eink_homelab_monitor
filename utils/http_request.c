@@ -70,8 +70,37 @@ void result_fn(
 	printf("server response: %ld\n", srv_res);
 	printf("err: %d\n", err);
 	request_complete = true;
-	request_success = (httpc_result == HTTPC_RESULT_OK);
+	// we'll actually check the recv data for specific text since we control the endpoint
+	// request_success = (httpc_result == HTTPC_RESULT_OK);
 	printf("<<< result_fn <<<\n");
+}
+
+bool is_in(char *source, int len_source, char *target) {
+	bool is_matched = false;
+
+	int len_target = strlen(target);
+
+	if (len_source < len_target) {
+		// has to be longer than target
+		is_matched = false;
+		return false;
+	}
+
+    int i;
+    for (i=0; i<=len_source-len_target; i++) {
+        int j;
+        char *slice_ptr = source + i;
+        for (j=0; j<len_target; j++) {
+            if (target[j] != slice_ptr[j]) {
+                break;
+            }
+        }
+        if (j == len_target) {
+            is_matched = true;
+            return is_matched;
+        }
+    }
+    return is_matched;
 }
 
 // when body data is received
@@ -93,6 +122,16 @@ err_t recv_fn(
 	char *data = (char *)p->payload;
 	int print_len = p->len <200 ? p->len : 200;
 	printf("Data: %.*s\n", print_len, data);
+
+	// check endpoint for specific response text
+	char alive_str[] = "alive";
+	if (is_in(data, p->len, alive_str)) {
+		printf("Set request to success!\n");
+		request_success = true;
+	} else {
+		printf("Set request to failed!\n");
+		request_success = false;
+	}
 
 	pbuf_free(p);
 
