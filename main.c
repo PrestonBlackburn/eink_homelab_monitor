@@ -134,7 +134,7 @@ int main(void) {
         #endif
 
         battery_pct = get_battery();
-        int eink_status = set_eink_status(&server_status, &dt);
+        int eink_status = set_eink_status(&server_status, &dt, battery_pct);
         // int battery_status = set_eink_battery(battery_pct);
 
         // I had a bunch of issues getting deepsleep working...

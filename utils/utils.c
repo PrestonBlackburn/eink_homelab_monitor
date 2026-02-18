@@ -30,7 +30,7 @@ int eink_init(void) {
 
 
 //int set_eink_status(int status, datetime_t *t) {
-int set_eink_status(ServerStatus *server_status, datetime_t *current_time) {
+int set_eink_status(ServerStatus *server_status, datetime_t *current_time, float battery_pct) {
 
     // create structure for paint function
     PAINT_TIME display_time;
@@ -66,6 +66,21 @@ int set_eink_status(ServerStatus *server_status, datetime_t *current_time) {
     int updated_value_y = 100;
 
 
+    // battery pct should be shown in top right corner
+    
+    // existing image ref
+    // upper conner x 28
+    // upper conner y 33
+    // (UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD Color)
+
+    // to display: : 97%
+    int x_battery_start = 5;
+    int y_battery_start = 5;
+    int battery_text_len = 5;
+    char battery_buffer[10];
+    snprintf(battery_buffer, sizeof(battery_buffer), "%.0f%%", battery_pct);
+    printf("Got Battery Pct: %s\n", battery_buffer);
+
     if (server_status->server_online == true) {
         printf("Uptime: %d days, %d hours\n", server_status->uptime_days, server_status->uptime_hours);
         printf("rtc time: %u day %u:%u:%u\n", display_time.Day,display_time.Hour, display_time.Min, display_time.Sec);
@@ -83,6 +98,10 @@ int set_eink_status(ServerStatus *server_status, datetime_t *current_time) {
 
         Paint_ClearWindows(110, updated_value_y, 110 + Font16.Width * 9, updated_value_y + Font16.Height, WHITE);
         Paint_DrawDatetime(110, updated_value_y, &display_time, &Font16, WHITE, BLACK);
+
+        // battery pct
+        Paint_ClearWindows(x_battery_start, y_battery_start, x_battery_start + Font12.Width * battery_text_len, y_battery_start + Font12.Height, WHITE);
+        Paint_DrawString_EN(x_battery_start, y_battery_start, battery_buffer, &Font12, BLACK, WHITE);
 
         EPD_2in13_V4_Display_Base(BlackImage);
         DEV_Delay_ms(2000);
@@ -106,6 +125,10 @@ int set_eink_status(ServerStatus *server_status, datetime_t *current_time) {
         Paint_ClearWindows(110, updated_value_y, 110 + Font16.Width * 9, updated_value_y + Font16.Height, WHITE);
         Paint_DrawDatetime(110, updated_value_y, &display_time, &Font16, WHITE, BLACK);
 
+        // battery pct
+        Paint_ClearWindows(x_battery_start, y_battery_start, x_battery_start + Font12.Width * battery_text_len, y_battery_start + Font12.Height, WHITE);
+        Paint_DrawString_EN(x_battery_start, y_battery_start, battery_buffer, &Font12, BLACK, WHITE);
+
         EPD_2in13_V4_Display_Base(BlackImage);
         DEV_Delay_ms(2000);
     }
@@ -120,4 +143,3 @@ int set_eink_status(ServerStatus *server_status, datetime_t *current_time) {
 
     return 0;
 }
-

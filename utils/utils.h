@@ -16,6 +16,6 @@ typedef struct _ServerStatus{
 } ServerStatus;
 
 int eink_init(void);
-int set_eink_status(ServerStatus *server_status, datetime_t *current_time);
+int set_eink_status(ServerStatus *server_status, datetime_t *current_time, float battery_pct);
 
 #endif
