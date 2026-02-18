@@ -139,7 +139,7 @@ err_t recv_fn(
 	return ERR_OK;
 }
 
-int test_http_request() {
+bool test_server_http_request() {
     printf("\n=== Starting HTTP Request ===\n");
 
 	httpc_connection_t settings = {
@@ -180,5 +180,8 @@ int test_http_request() {
    	printf("waiting for request\n");
 	sleep_ms(10000);
 	printf("HTTP Request Done\n");
-	return 0;
+
+	// should return true/false based on response status
+	return request_success;
+	// return 0;
 }

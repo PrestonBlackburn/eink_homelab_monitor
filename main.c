@@ -13,11 +13,17 @@
 #include "custom_sleep.h"
 #include "pico/util/datetime.h" 
 #include "pico/sleep.h"
+#include "Pico_UPS.h"
 
 int main(void) {
 
     stdio_init_all();
-    DEV_Delay_ms(5000); 
+    DEV_Delay_ms(5000);
+
+    // testing
+    float battery_pct;
+    battery_pct = get_battery();
+    
 
     if (DEV_Module_Init() != 0) {
         printf("e-Paper init failed\n");
@@ -68,11 +74,11 @@ int main(void) {
         #if 1
 
             printf("Starting HTTP Request Test\n");
-            int http_status = test_http_request();
+            bool http_status = test_server_http_request();
             DEV_Delay_ms(2000); 
 
             rtc_get_datetime(&dt);
-            if (http_status == 0) {
+            if (http_status == true) {
                 printf("Server Online\n");
                 if (server_status.server_online == false) {
                     // really this should be a time diff (easier diff with int)
@@ -127,7 +133,9 @@ int main(void) {
 
         #endif
 
+        battery_pct = get_battery();
         int eink_status = set_eink_status(&server_status, &dt);
+        // int battery_status = set_eink_battery(battery_pct);
 
         // I had a bunch of issues getting deepsleep working...
         // maybe revisit later with external rtc fow wakeup
@@ -157,8 +165,9 @@ int main(void) {
             }
         #else
             // poll time
-            int min = 15;
-            sleep_ms(1000 * 60 * min);
+            // int min = 15;
+            // sleep_ms(1000 * 60 * min);
+            sleep_ms(2000);
 
         #endif
     }
